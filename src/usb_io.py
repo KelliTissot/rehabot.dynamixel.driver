@@ -1,14 +1,4 @@
-"""WebSocket IO definition."""
-
-import json
-import asyncio
-import websockets
-import numpy as np
-
-from threading import Thread, Event
-from base64 import b64decode
-from io import BytesIO
-from PIL import Image
+# IO para substituir driver Luos na integração com biblioteca Reachy
 
 from reachy.io.io import IO
 from usb_motor import UsbMotor

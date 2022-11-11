@@ -1,3 +1,5 @@
+# Adaptador para conexão USB Serial com motores Dynamixel MX
+
 import os
 import math
 

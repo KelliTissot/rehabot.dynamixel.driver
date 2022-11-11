@@ -1,6 +1,7 @@
+# Definição da gravação e leitura de parâmetros no motor
+
 from usb_dlx_server import UsbDlxServer
 from utils import deg_to_int, int_to_deg
-
 
 class UsbMotor(object):
     def __init__(self, name, motor_id, server:UsbDlxServer):
