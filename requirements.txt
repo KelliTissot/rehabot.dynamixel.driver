@@ -1,0 +1,4 @@
+reachy-sdk==0.5.1
+numpy==1.18.5
+protobuf==3.20.1
+reachy
