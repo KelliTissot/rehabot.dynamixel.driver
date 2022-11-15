@@ -76,3 +76,8 @@ reachy.left_arm.elbow_pitch.compliant = True
 reachy.left_arm.shoulder_pitch.compliant = True
 
 ```
+## P I D
+Valores originais
+P = 32
+I = 0
+D = 0

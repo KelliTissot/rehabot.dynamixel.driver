@@ -1,8 +1,8 @@
 # IO para substituir driver Luos na integração com biblioteca Reachy
 
 from reachy.io.io import IO
-from usb_motor import UsbMotor
-from usb_dlx_server import UsbDlxServer
+from .usb_motor import UsbMotor
+from .usb_dlx_server import UsbDlxServer
 
 class UsbIO(IO):
     """USB Serial IO implementation."""
@@ -19,7 +19,6 @@ class UsbIO(IO):
         """Get a specific dynamixel motor from the IO.
         Only goal position is used atm.
         """
-        print( 'DLX CONFIGU', dxl_config)
         pos = dxl_config['offset'] * (-1 if dxl_config['orientation'] == 'indirect' else 1)
         m = UsbMotor(name=f'{self.part_name}.{dxl_name}', motor_id=dxl_config['id'], server= self.server)
         self.motors.append(m)
