@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from RPi import GPIO
 import time
 from operator import attrgetter
@@ -5,8 +6,7 @@ from operator import attrgetter
 from reachy.trajectory import TrajectoryRecorder, TrajectoryPlayer
 from reachy import parts, Reachy
 import numpy as np
-import time
-from serial_utils import get_or_list_available_ports 
+# from serial_utils import get_or_list_available_ports 
 
 from src.rehabot_arm import RehabotArm
 from src.usb_io import UsbIO
@@ -16,7 +16,10 @@ from src.usb_motor import UsbMotor
 #Para escolher a porta quando tem mais coisas conectadas
 # port = get_or_list_available_ports() 
 port = '/dev/ttyUSB0'
-
+io = UsbIO(part_name='right_arm', port=port)
+reachy = Reachy(
+    right_arm=RehabotArm(io=io),  
+)
 
 #instanciando os botões
 LED_RECORDING = 3
@@ -25,21 +28,14 @@ LED_READY = 7
 BTN_PLAY = 11
 BTN_RECORD = 13
 
+P_GAIN = 5
+
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(BTN_RECORD, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BTN_PLAY, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(LED_READY, GPIO.OUT)
 GPIO.setup(LED_RECORDING, GPIO.OUT)
 GPIO.setup(LED_PLAYING, GPIO.OUT)
-
-reachy= None
-
-def init_reachy():
-    if not reachy:
-        io = UsbIO(part_name='right_arm', port=port)
-        reachy = Reachy(
-            right_arm=RehabotArm(io=io),  
-        )
 
 
 def set_led_recording(on: bool):
@@ -52,7 +48,6 @@ def set_led_playing(on: bool):
     GPIO.output(LED_PLAYING, 0 if on else 1)
 
 def record():
-    init_reachy()
     #habilita todos os motores      
     motors = reachy.right_arm.motors 
 
@@ -80,7 +75,6 @@ def record():
 
 
 def play():
-    init_reachy()
     my_loaded_trajectory = np.load(f'records/botao.npz')
 
     motors = list([*my_loaded_trajectory.keys()])
@@ -90,7 +84,7 @@ def play():
     for motor_name in motors: 
         motor = attrgetter(motor_name)(reachy)
         motor.compliant = False
-        motor._motor.p_gain = 8
+        motor._motor.p_gain = P_GAIN
 
     trajectory_player = TrajectoryPlayer(reachy, my_loaded_trajectory, freq = 100)
     trajectory_player.play(wait=True, fade_in_duration=2)
@@ -107,6 +101,7 @@ def main():
         set_led_recording(state)
         set_led_playing(state)
         set_led_ready(state)
+        time.sleep(0.5)
 
     set_led_recording(False)
     set_led_playing(False)

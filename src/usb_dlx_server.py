@@ -5,23 +5,23 @@ import math
 from threading import Semaphore
 import logging
 
-logger = logging.getLogger('UsbDlxServer')
+# logger = logging.getLogger('UsbDlxServer')
 
-if os.name == 'nt':
-    import msvcrt
-    def getch():
-        return msvcrt.getch().decode()
-else:
-    import sys, tty, termios
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    def getch():
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
+# if os.name == 'nt':
+#     import msvcrt
+#     def getch():
+#         return msvcrt.getch().decode()
+# else:
+#     import sys, tty, termios
+#     fd = sys.stdin.fileno()
+#     old_settings = termios.tcgetattr(fd)
+#     def getch():
+#         try:
+#             tty.setraw(sys.stdin.fileno())
+#             ch = sys.stdin.read(1)
+#         finally:
+#             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+#         return ch
 
 from dynamixel_sdk import *
 
@@ -45,7 +45,7 @@ class UsbDlxServer():
         self.semaphore = Semaphore()
 
     def open(self):
-        logger.info(f'Conectando a porta {self.port} em {self.baudrate}')
+        # logger.info(f'Conectando a porta {self.port} em {self.baudrate}')
         if not self.portHandler.openPort():
             raise Exception(f'Falha ao conectar na porta {self.port}')
         if not self.portHandler.setBaudRate(self.baudrate):
@@ -56,77 +56,77 @@ class UsbDlxServer():
 
     def _write2ByteTxRx(self, motor_id:int, address: int, value: int, retry=5):
         self.semaphore.acquire()
-        logger.debug(f'UsbDlxServer gravando 2 bytes ({value})  no motor {motor_id} no endereço {address}')
+        # logger.debug(f'UsbDlxServer gravando 2 bytes ({value})  no motor {motor_id} no endereço {address}')
         packetHandler = PacketHandler(self.protocol_version)
         dxl_comm_result, dxl_error = packetHandler.write2ByteTxRx(self.portHandler, motor_id, address, int(value))
         self.semaphore.release()
         if dxl_comm_result != COMM_SUCCESS:
-            logger.error("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+            print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
             if retry > 0:
-                logger.debug(f'Retenando {retry}')
+                # logger.debug(f'Retenando {retry}')
                 self._write2ByteTxRx(motor_id, address, value, retry - 1)
             else:
                 raise Exception(f"{packetHandler.getTxRxResult(dxl_comm_result)} - ID: {motor_id}")
         elif dxl_error != 0:
-            logger.error("%s" % packetHandler.getRxPacketError(dxl_error))
-        else:
-            logger.info(f'Gravado ({value})  no motor {motor_id} no endereço {address}')
+            print("%s" % packetHandler.getRxPacketError(dxl_error))
+        # else:
+            # logger.info(f'Gravado ({value})  no motor {motor_id} no endereço {address}')
 
     def _write1ByteTxRx(self, motor_id:int, address: int, value: int, retry = 5):
         self.semaphore.acquire()
-        logger.info(f'UsbDlxServer gravando 1 byte ({value}) no motor {motor_id} no endereço {address}')
+        # logger.info(f'UsbDlxServer gravando 1 byte ({value}) no motor {motor_id} no endereço {address}')
         packetHandler = PacketHandler(self.protocol_version)
         dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(self.portHandler, motor_id, address, int(value))
         self.semaphore.release()
         if dxl_comm_result != COMM_SUCCESS:
-            logger.error("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+            print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
             if retry > 0:
-                logger.debug(f'Retenando {retry}')
+                # logger.debug(f'Retenando {retry}')
                 self._write1ByteTxRx(motor_id, address, value, retry - 1)
             else:
                 raise Exception(f"{packetHandler.getTxRxResult(dxl_comm_result)} - ID: {motor_id}")
         elif dxl_error != 0:
-            logger.error("%s" % packetHandler.getRxPacketError(dxl_error))
-        else:
-            logger.info(f'Gravado ({value})  no motor {motor_id} no endereço {address}')
+            print("%s" % packetHandler.getRxPacketError(dxl_error))
+        # else:
+            # logger.info(f'Gravado ({value})  no motor {motor_id} no endereço {address}')
 
 
     def _read2ByteTxRx(self, motor_id: int, address: int, retry = 5):
         self.semaphore.acquire()
-        logger.info(f'UsbDlxServer lendo 2 bytes do motor {motor_id} no endereço {address}')
+        # logger.info(f'UsbDlxServer lendo 2 bytes do motor {motor_id} no endereço {address}')
         packetHandler = PacketHandler(self.protocol_version)
         dxl_present_position, dxl_comm_result, dxl_error = packetHandler.read2ByteTxRx(self.portHandler, motor_id, address)
         self.semaphore.release()
         if dxl_comm_result != COMM_SUCCESS:
-            logger.error("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+            print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
             if retry > 0:
-                logger.debug(f'Retenando {retry}')
+                # logger.debug(f'Retenando {retry}')
                 self._read2ByteTxRx(motor_id, address, retry-1)
             else:
                 raise Exception(f"{packetHandler.getTxRxResult(dxl_comm_result)} - ID: {motor_id}")
         elif dxl_error != 0:
-            logger.error("%s" % packetHandler.getRxPacketError(dxl_error))
-        else:
-            logger.info(f'Resultado do motor {motor_id} no endereço {address}: {dxl_present_position}')
+            print("%s" % packetHandler.getRxPacketError(dxl_error))
+        # else:
+            # logger.info(f'Resultado do motor {motor_id} no endereço {address}: {dxl_present_position}')
         return dxl_present_position
 
     def _read1ByteTxRx(self, motor_id: int, address: int, retry = 5):
         self.semaphore.acquire()
-        logger.info(f'UsbDlxServer lendo 1 byte do motor {motor_id} no endereço {address}')
+        # logger.info(f'UsbDlxServer lendo 1 byte do motor {motor_id} no endereço {address}')
         packetHandler = PacketHandler(self.protocol_version)
         dxl_present_position, dxl_comm_result, dxl_error = packetHandler.read1ByteTxRx(self.portHandler, motor_id, address)
         self.semaphore.release()
         if dxl_comm_result != COMM_SUCCESS:
-            logger.error("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+            print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
             if retry > 0:
-                logger.debug(f'Retenando {retry}')
+                # logger.debug(f'Retenando {retry}')
                 self._read1ByteTxRx(motor_id, address, retry-1)
             else:
                 raise Exception(f"{packetHandler.getTxRxResult(dxl_comm_result)} - ID: {motor_id}")
         elif dxl_error != 0:
-            logger.error("%s" % packetHandler.getRxPacketError(dxl_error))
-        else:
-            logger.info(f'>>Resultado do motor {motor_id} no endereço {address}: {dxl_present_position}')
+            print("%s" % packetHandler.getRxPacketError(dxl_error))
+        # else:
+            # logger.info(f'>>Resultado do motor {motor_id} no endereço {address}: {dxl_present_position}')
         return dxl_present_position
 
 

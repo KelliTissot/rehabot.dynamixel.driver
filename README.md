@@ -6,6 +6,7 @@
 
 ```bash
 #Instalando dependências
+sudo apt install libatlas-base-dev
 python3 -m pip install -r requirements.txt
 ```
 
@@ -81,3 +82,13 @@ Valores originais
 P = 32
 I = 0
 D = 0
+
+
+## Ver logs
+
+pm2 logs rehabot_button  -f
+
+## Reiniciar
+pm2 restart rehabot_button
+
+
